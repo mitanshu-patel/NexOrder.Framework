@@ -31,6 +31,10 @@ jobs:
       - name: Pack
         run: dotnet pack --configuration Release --no-build -o ./nupkg
 
-      - name: Publish to GitHub Packages
-        run: dotnet nuget push "./nupkg/*.nupkg" \
-              --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --api-key ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish
+        run: |
+          for file in ./nupkg/*.nupkg; do
+            dotnet nuget push "$file" \
+              --source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json \
+              --api-key ${{ secrets.GITHUB_TOKEN }}
+          done
