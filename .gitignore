@@ -1,0 +1,8 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/NexOrder.Core/.vs/NexOrder.Core
+/NexOrder.Core/bin/Debug
+/NexOrder.Core/obj
