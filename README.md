@@ -30,20 +30,6 @@ dotnet pack ./NexOrder.Core/NexOrder.Framework.Core.csproj -c Release -o ./nupkg
 
 The produced `.nupkg` will be placed in `nupkgs` when packing locally.
 
-Usage
------
-
-Register the library services in your application's composition root (example for a typical .NET host):
-
-```csharp
-// var builder = WebApplication.CreateBuilder(args);
-// var services = builder.Services;
-// var configuration = builder.Configuration;
-
-// Example registration helper provided by the library
-// NexOrderDefaultRegistrations.AddNexOrderCore(services, configuration);
-```
-
 Program.cs registrations
 ------------------------
 
@@ -141,17 +127,18 @@ Explanation:
 - `Services` contains concrete implementations of the contracts — for example `MessageDeliveryService` implements `IMessageDeliveryService` and wires Azure Service Bus usage.
 - `NexOrder.Framework.Core.csproj` is configured to produce the NuGet package; see `NexOrder.Core/README.md` for package-specific guidance.
 
-Contributing
-------------
+Release and publishing
+----------------------
 
-This project accepts issues and pull requests. Please follow repository coding conventions and add tests for new behavior.
+The repository uses a GitHub Actions workflow to publish NuGet packages automatically when a new release tag is created. Key points:
 
-License
--------
+- The package `Version` is taken from `NexOrder.Core/NexOrder.Framework.Core.csproj` as a fallback version. So whenever any new tag release is created, we manually specify new version and accordingly new package is created.
+- The publish workflow triggers on new release tags (for example `v1.0.0`). The workflow will build, pack and push the generated `.nupkg` using the repository's secrets. To use this package, one need to create Personal Access Token via Profile -> Developer Settings -> Tokens (Classic).
 
-See repository root for license information.
+Create a release tag locally and push it to trigger the workflow:
 
-More information
-----------------
-
-See the `NexOrder.Core/README.md` for NuGet-oriented usage notes and examples specific to the core package.
+```bash
+# update the csproj Version if needed, commit the change
+git tag -a v1.0.0 -m "Release v1.0.0"
+git push origin v1.0.0
+```
