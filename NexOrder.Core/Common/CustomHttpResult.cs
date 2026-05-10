@@ -17,7 +17,7 @@ namespace NexOrder.Framework.Core.Common
             }
             else if (customResponse.ResponseCode == System.Net.HttpStatusCode.Unauthorized)
             {
-                return new UnauthorizedResult();
+                return new UnauthorizedObjectResult(customResponse.ErrorMessage);
             }
             else if (customResponse.ResponseCode == System.Net.HttpStatusCode.Forbidden)
             {
