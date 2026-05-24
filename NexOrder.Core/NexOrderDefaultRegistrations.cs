@@ -58,5 +58,16 @@ namespace NexOrder.Framework.Core
                 return new MessageDeliveryService(options);
             });
         }
+
+        public static void AddOpenAIService(this IServiceCollection services, Action<OpenAIOptions> action)
+        {
+            ArgumentNullException.ThrowIfNull(action, nameof(action));
+            var options = new OpenAIOptions();
+            action(options);
+            services.AddSingleton<IOpenAIService>(serviceProvider =>
+            {
+                return new OpenAIService(options);
+            });
+        }
     }
 }
