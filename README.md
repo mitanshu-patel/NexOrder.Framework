@@ -63,6 +63,15 @@ services.AddMessageDeliveryService(options =>
     options.WebProxyAddress = configuration["ServiceBus:WebProxyAddress"] ?? string.Empty;
 });
 
+// 4) OpenAI registration
+services.AddOpenAIService(options =>
+{
+    options.ApiKey = configuration["OpenAIAPIKey"] ?? string.Empty;
+    options.DeploymentName = configuration["OpenAIDeployment"] ?? string.Empty;
+    options.Url = configuration["OpenAIEndpoint"] ?? string.Empty;
+    options.Model = configuration["OpenAIModel"] ?? string.Empty;
+});
+
 var app = builder.Build();
 // ... configure middleware and run
 app.Run();
@@ -87,6 +96,62 @@ Service Bus configuration is read via a configuration model (`ServiceBusOptions`
 }
 ```
 
+AI Services (OpenAI)
+-------------
+
+The framework includes a built-in wrapper for interacting with Azure OpenAI via the official SDK, allowing you to easily add large language model (LLM) capabilities to your applications.
+
+Open AI configuration is read via a configuration model (`OpenAIOptions`). Example `appsettings.json` in Values section:
+
+```json
+{
+   "OpenAIAPIKey": "<your-api-key>",
+   "OpenAIDeployment": "<deployment-name>",
+   "OpenAIEndpoint": "<api-endpoint-url>",
+   "OpenAIModel": "<ai-model-name>"
+}
+```
+**DI Registration**
+
+Register the OpenAI service in your `Program.cs` or startup configuration using the provided extension method:
+
+```csharp
+services.AddOpenAIService(options =>
+{
+    options.ApiKey = configuration["OpenAIAPIKey"] ?? string.Empty;
+    options.DeploymentName = configuration["OpenAIDeployment"] ?? string.Empty;
+    options.Url = configuration["OpenAIEndpoint"] ?? string.Empty;
+    options.Model = configuration["OpenAIModel"] ?? string.Empty;
+});
+```
+
+**Usage Example**
+```csharp
+using NexOrder.Framework.AI;
+
+public class ChatWorkflow
+{
+    private readonly IOpenAIService _openAIService;
+
+    public ChatWorkflow(IOpenAIService openAIService)
+    {
+        _openAIService = openAIService;
+        
+        // Initialize the client configuration
+        _openAIService.InitializeOpenAIService();
+        
+        // Optional: Set system context/rules for the model
+        _openAIService.SetSystemMessage("You are a helpful assistant for an ordering system.");
+    }
+
+    public async Task<string> GetAiSuggestion(string prompt)
+    {
+        // Generate AI response asynchronously
+        return await _openAIService.GenerateResponseAsyc(prompt);
+    }
+}
+```
+
 Public surface (high level)
 ---------------------------
 - `IMessageDeliveryService` / `MessageDeliveryService` — send messages to Service Bus
@@ -94,6 +159,7 @@ Public surface (high level)
 - `IHandler<TRequest, TResponse>` / handler base types
 - Common response types: `CustomResponse<T>`, `CustomHttpResult`, `MessageResult`
 - `NexOrderDefaultRegistrations` and `Extensions` — DI helpers and configuration wiring
+- `IOpenAIService` / `OpenAIService` — gives capability to use open AI
 
 Project structure
 -----------------
@@ -111,14 +177,17 @@ NexOrder.Core/
     HandlerRegistration.cs              # Helper to register handlers into DI
     Extensions.cs                       # Extension methods for DI/config
     ServiceBusOptions.cs                # Configuration model for Service Bus
+    OpenAIOptions.cs                    # Configuration model for Open AI service
     RequestHandlerBase.cs                # Base class for request handlers
   Contracts/                            # Public interfaces and contracts
     IMessageDeliveryService.cs          # Abstraction for sending messages
     IHandler.cs                          # Generic handler contract
     IMediator.cs                         # Mediator abstraction
+    IOpenAIService.cs                    # Abstraction for open AI chat client
   Services/                             # Implementations
     MessageDeliveryService.cs            # Service Bus integration
     Mediator.cs                          # In-process mediator implementation
+    OpenAIService.cs                     # Open AI integration
 ```
 
 Explanation:
