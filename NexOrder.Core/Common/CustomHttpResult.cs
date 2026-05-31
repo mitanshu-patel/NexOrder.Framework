@@ -27,6 +27,10 @@ namespace NexOrder.Framework.Core.Common
             {
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
+            else if (customResponse.ResponseCode == System.Net.HttpStatusCode.TooManyRequests)
+            {
+                return new StatusCodeResult(StatusCodes.Status429TooManyRequests);
+            }
             return new OkObjectResult(customResponse.Data);
         }
 
