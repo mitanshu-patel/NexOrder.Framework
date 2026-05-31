@@ -66,6 +66,16 @@ namespace NexOrder.Framework.Core.Common
             return customResponse;
         }
 
+        public static CustomResponse<T> TooManyRequests<T>(T result)
+        {
+            var customResponse = new CustomResponse<T>
+            {
+                ResponseCode = System.Net.HttpStatusCode.TooManyRequests,
+                Data = result,
+            };
+            return customResponse;
+        }
+
         public static CustomResponse<T> UnAuthorized<T>(string errorMessage)
         {
             var customResponse = new CustomResponse<T>
