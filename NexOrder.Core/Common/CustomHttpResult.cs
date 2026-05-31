@@ -66,12 +66,12 @@ namespace NexOrder.Framework.Core.Common
             return customResponse;
         }
 
-        public static CustomResponse<T> TooManyRequests<T>(T result)
+        public static CustomResponse<T> TooManyRequests<T>(string errorMessage)
         {
             var customResponse = new CustomResponse<T>
             {
                 ResponseCode = System.Net.HttpStatusCode.TooManyRequests,
-                Data = result,
+                ErrorMessage = errorMessage,
             };
             return customResponse;
         }
