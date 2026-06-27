@@ -23,6 +23,7 @@ namespace NexOrder.Framework.Core
             .UseFunctionsWorkerDefaults()
             .WithTracing(builder => {
                 builder
+                    .AddSource("Microsoft.SemanticKernel*")
                     .AddHttpClientInstrumentation()
                     .AddAspNetCoreInstrumentation()
                     .AddEntityFrameworkCoreInstrumentation()
